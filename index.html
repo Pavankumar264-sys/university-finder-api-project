@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>University Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    input {
+      padding: 10px;
+      width: 250px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      background: #fff;
+      margin: 8px auto;
+      padding: 12px 20px;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>University Finder</h1>
+  <p>Enter a country name to find its universities:</p>
+  <input id="countryInput" placeholder="e.g. India, United States" />
+  <button id="searchBtn">Search</button>
+
+  <ul id="list"></ul>
+
+  <script src="https://unpkg.com/axios@1.6.7/dist/axios.min.js"></script>
+  <script>
+    let url = "http://universities.hipolabs.com/search?country=";
+
+    let btn = document.querySelector("#searchBtn");
+
+    btn.addEventListener("click", async () => {
+      let country = document.querySelector("#countryInput").value.trim();
+      if (country === "") return;
+      let colarr = await getColleges(country);
+      show(colarr);
+    });
+
+    async function getColleges(country) {
+      try {
+        let info = await axios.get(url + encodeURIComponent(country));
+        return info.data;
+      } catch (e) {
+        console.log("error", e);
+        return [];
+      }
+    }
+
+    function show(colarr) {
+      let list = document.querySelector("#list");
+      list.innerHTML = "";
+      if (colarr.length === 0) {
+        let li = document.createElement("li");
+        li.innerText = "No universities found.";
+        list.appendChild(li);
+        return;
+      }
+      for (let col of colarr) {
+        let li = document.createElement("li");
+        li.innerHTML = `<strong>${col.name}</strong><br><a href="${col.web_pages[0]}" target="_blank">${col.web_pages[0]}</a>`;
+        list.appendChild(li);
+      }
+    }
+  </script>
+</body>
+</html>
